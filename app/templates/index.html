@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Model Deployment</title>
+</head>
+<body>
+    <h1>Model Deployment with Flask</h1>
+    <form id="prediction-form">
+        <label for="Skills">Skills:</label>
+        <input type="text" id="Skills" name="Skills" placeholder="Enter Skills..."><br>
+        <label for="Location">Location:</label>
+        <input type="text" id="Location" name="Location" placeholder="Enter Location..."><br>
+        <label for="Type_of_Organization">Type of Organization:</label>
+        <input type="text" id="Type_of_Organization" name="Type_of_Organization" placeholder="Enter Type of Organization..."><br>
+        <!-- <label for="Qualifications">Qualifications:</label>
+        <input type="text" id="Qualifications" name="Qualifications" placeholder="Enter Qualifications..."><br>
+        <label for="Category">Category:</label> -->
+        <!-- <input type="text" id="Category" name="Category" placeholder="Enter Category..."><br> -->
+        <button type="button" onclick="predict()">Predict</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        function predict() {
+            var data = {
+                'Skills': document.getElementById('Skills').value,
+                'Location': document.getElementById('Location').value,
+                'Type of Organization': document.getElementById('Type_of_Organization').value,
+            };
+    
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            // .then(data => {
+            //     // Access the 'result' key from the JSON response
+            //     document.getElementById('result').innerHTML = 'Prediction Result: ' + data.result;
+            // })
+            .then(data => {
+                // Check if 'result' key is present in the JSON response
+                if ('result' in data) {
+                    document.getElementById('result').innerHTML = 'Prediction Result: ' + data.result;
+                } else {
+                    console.error('Error: "result" key not found in the JSON response');
+                }
+            })
+
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+    
+</body>
+</html>
