@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from keras.models import load_model
 from flask_cors import CORS
+import requests
 import json
 import os
 import joblib
@@ -132,8 +133,15 @@ def predict_interest(data):
         print(results_df)
         print(top_5_recommendations_json)
 
-        result_listed = json.dumps(top_5_recommendations_json)
-        return result_listed
+        result_listed = json.loads(top_5_recommendations_json.replace("\"",'"'))
+        json_without_slash = json.dumps(result_listed)
+        url = 'http://localhost:3000/events/predict'
+        response = requests.post(url, json=top_5_recommendations_json)
+        if response.status_code == 200:
+            print("Data sent successfully")
+        else:
+            print("Failed to send data. Status code:", response.status_code)
+        return json_without_slash
 
     except Exception as e:
         print("Error in predict_interest:", str(e))
