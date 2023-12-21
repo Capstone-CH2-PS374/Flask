@@ -7,6 +7,7 @@ import pandas as pd
 from keras.models import load_model
 from flask_cors import CORS
 import json
+import os
 import joblib
 from sqlalchemy import create_engine
 
@@ -14,7 +15,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load model saat aplikasi dimulai
-model_path = '../model/my_model.h5'
+model_path = './model/my_model.h5'
 model = load_model(model_path)
 print("Model loaded successfully")
 
@@ -25,7 +26,7 @@ tokenizer_skill = Tokenizer(num_words=1000, oov_token="<OOV>")
 # Set OneHotEncoder
 encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
 # Muat encoder yang telah di-fit
-encoder = joblib.load('../encoder_fit/encoder.joblib')
+encoder = joblib.load('./encoder_fit/encoder.joblib')
 
 
 # Getting database
@@ -76,9 +77,9 @@ def predict_interest(data):
         # Memuat nilai rata-rata dari file numpy
        # Memuat nilai rata-rata dari file numpy
         average_qualifications_pad = np.load(
-            '../average/average_qualifications_pad.npy')
+            './average/average_qualifications_pad.npy')
         average_event_cat_loc_org_encoded = np.load(
-            '../average/average_event_cat_loc_org_encoded.npy')
+            './average/average_event_cat_loc_org_encoded.npy')
 
         # Transpose skill_pad for make input shape to model
         skill_pad_t = np.transpose(skill_pad)
@@ -171,4 +172,4 @@ def predict_interested(data):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
